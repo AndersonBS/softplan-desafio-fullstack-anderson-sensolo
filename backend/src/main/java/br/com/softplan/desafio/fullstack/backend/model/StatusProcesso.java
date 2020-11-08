@@ -1,4 +1,4 @@
-package br.com.softplan.desafio.fullstack.backend.models;
+package br.com.softplan.desafio.fullstack.backend.model;
 
 import java.util.Map;
 import com.google.common.collect.ImmutableMap;

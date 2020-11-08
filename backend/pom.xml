@@ -38,7 +38,7 @@
 			<optional>true</optional>
 		</dependency>
 		
-		<!-- Spring Boot Starter Test -->
+		<!-- Spring Boot Starter Tomcat -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
@@ -58,6 +58,12 @@
 			</exclusions>
 		</dependency>
 		
+		<!-- Spring Boot Starter Data JPA -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
 		<!-- Lombok -->
 		<dependency>
 		    <groupId>org.projectlombok</groupId>
@@ -69,6 +75,25 @@
 		    <groupId>com.google.collections</groupId>
 		    <artifactId>google-collections</artifactId>
 		    <version>${google-collections.version}</version>
+		</dependency>
+		
+		<!-- MySQL Connector Java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Flyway Core -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		
+		<!-- Hibernate Envers -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-envers</artifactId>
 		</dependency>
 	</dependencies>
 
