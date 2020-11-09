@@ -14,10 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import org.hibernate.envers.Audited;
@@ -69,8 +69,8 @@ public class Processo implements Serializable {
 	@JoinColumn(name = "CODUSUARIO", nullable = false)
 	private Usuario responsavel;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "CODPROCESSO")
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "PROCESSO_USUARIO", joinColumns = @JoinColumn(name = "CODPROCESSO"), inverseJoinColumns = @JoinColumn(name = "CODUSUARIO"))
 	private List<Usuario> usuarios = new ArrayList<>();
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
