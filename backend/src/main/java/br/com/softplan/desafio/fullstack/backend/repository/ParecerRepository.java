@@ -1,6 +1,5 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.softplan.desafio.fullstack.backend.model.Parecer;
 
@@ -11,7 +10,5 @@ import br.com.softplan.desafio.fullstack.backend.model.Parecer;
  */
 
 public interface ParecerRepository extends JpaRepository<Parecer, Long> {
-
-	Optional<Parecer> findByCodigo(final Long codigo);
 
 }

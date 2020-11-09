@@ -1,6 +1,5 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import br.com.softplan.desafio.fullstack.backend.model.Processo;
@@ -13,7 +12,5 @@ import br.com.softplan.desafio.fullstack.backend.model.Processo;
 
 @Repository
 public interface ProcessoRepository extends JpaRepository<Processo, Long> {
-
-	Optional<Processo> findByCodigo(final Long codigo);
 
 }

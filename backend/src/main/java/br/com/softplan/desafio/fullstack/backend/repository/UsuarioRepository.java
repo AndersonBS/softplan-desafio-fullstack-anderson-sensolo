@@ -1,6 +1,5 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import br.com.softplan.desafio.fullstack.backend.model.Usuario;
@@ -14,6 +13,8 @@ import br.com.softplan.desafio.fullstack.backend.model.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-	Optional<Usuario> findByCodigo(final Long codigo);
+	boolean existsByLogin(final String login);
+
+	boolean existsByEmail(final String email);
 
 }
