@@ -1,6 +1,5 @@
 package br.com.softplan.desafio.fullstack.backend.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +28,7 @@ import lombok.NoArgsConstructor;
 @Audited
 @Entity
 @Table(name = "PARECER")
-public class Parecer implements Serializable {
-
-	private static final long serialVersionUID = 36191721367651717L;
+public class Parecer {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

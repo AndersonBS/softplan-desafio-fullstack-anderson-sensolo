@@ -1,6 +1,5 @@
 package br.com.softplan.desafio.fullstack.backend.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,10 +37,8 @@ import lombok.NoArgsConstructor;
 @Audited
 @Entity
 @Table(name = "PROCESSO")
-public class Processo implements Serializable {
+public class Processo {
 
-	private static final long serialVersionUID = 6343029764554581621L;
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CODPROCESSO", nullable = false)
@@ -80,5 +77,9 @@ public class Processo implements Serializable {
 	@Version
 	@Column(name = "VERSAO")
 	private Integer versao;
+	
+	public String getCodigoNome() {
+		return String.format("%d - %s", this.codigo, this.nome);
+	}
 	
 }
