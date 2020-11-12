@@ -45,6 +45,7 @@ public enum PermissaoUsuario {
 
 	private static final Map<String, PermissaoUsuario> stringValueMap;
 	static {
+		// Utilizado HashMap para otimizar consultas. Complexidade O(1)
 		final Map<String, PermissaoUsuario> tmpMap = Maps.newHashMap();
 		for (final PermissaoUsuario permissaoUsuario : PermissaoUsuario.values()) {
 			tmpMap.put(permissaoUsuario.getNome(), permissaoUsuario);

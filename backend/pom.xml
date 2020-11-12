@@ -21,6 +21,9 @@
 		
 		<!-- Google Collections Version -->
 		<google-collections.version>1.0</google-collections.version>
+		
+		<!-- JSON Web Token Version -->
+		<jjwt.version>0.9.1</jjwt.version>
 	</properties>
 
 	<dependencies>
@@ -64,6 +67,12 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		
+		<!-- Spring Boot Starter Security -->
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
 		<!-- Lombok -->
 		<dependency>
 		    <groupId>org.projectlombok</groupId>
@@ -100,6 +109,13 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
+		</dependency>
+		
+		<!-- JSON Web Token -->
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt</artifactId>
+		    <version>${jjwt.version}</version>
 		</dependency>
 	</dependencies>
 

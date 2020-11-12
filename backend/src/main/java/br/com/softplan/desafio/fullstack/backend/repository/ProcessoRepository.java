@@ -1,6 +1,9 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import br.com.softplan.desafio.fullstack.backend.model.Processo;
 
@@ -12,5 +15,22 @@ import br.com.softplan.desafio.fullstack.backend.model.Processo;
 
 @Repository
 public interface ProcessoRepository extends JpaRepository<Processo, Long> {
+
+	@Query(" select pro from Processo pro " +
+			"    inner join pro.usuarios usu " +
+			"where usu.codigo = :codigoUsuarioFinalizador " +
+			"    and not exists (select par from Parecer par " +
+			"        where par.processo.codigo = pro.codigo " +
+			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
+	List<Processo> findAllPendentesUsuarioFinalizador(final Long codigoUsuarioFinalizador);
+
+	@Query(" select pro from Processo pro " +
+			"    inner join pro.usuarios usu " +
+			"where usu.codigo = :codigoUsuarioFinalizador " +
+			"    and pro.codigo = :codigoProcesso " +
+			"    and not exists (select par from Parecer par " +
+			"        where par.processo.codigo = pro.codigo " +
+			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
+	Optional<Processo> findPendenteUsuarioFinalizador(final Long codigoUsuarioFinalizador, final Long codigoProcesso);
 
 }

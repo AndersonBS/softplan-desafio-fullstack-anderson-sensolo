@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ public class ParecerController {
 	@Autowired UsuarioRepository usuarioRepository;
 
 	@GetMapping("/get")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<List<ParecerResponseDTO>> getPareceres() {
 		final List<ParecerResponseDTO> parecerResponseDTOs = new ArrayList<>();
 		for (final Parecer parecer : this.parecerRepository.findAll()) {
@@ -51,6 +53,7 @@ public class ParecerController {
 	}
 
 	@GetMapping("/get/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<ParecerResponseDTO> getParecer(@PathVariable final Long codigo) {
 		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);
 		if (parecerOptional.isPresent()) {
@@ -60,6 +63,7 @@ public class ParecerController {
 	}
 
 	@DeleteMapping("/delete/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<Void> deleteParecer(@PathVariable final Long codigo) {
 		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);
 		if (parecerOptional.isPresent()) {
@@ -70,6 +74,7 @@ public class ParecerController {
 	}
 
 	@PostMapping("/create")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<MensagemResponseDTO> createParecer(@Valid @RequestBody final ParecerRequestDTO parecerRequestDTO) {
 		final Optional<Processo> processoOptional = this.processoRepository.findById(parecerRequestDTO.getProcesso());
 		final Optional<Usuario> autorOptional = this.usuarioRepository.findById(parecerRequestDTO.getAutor());
@@ -90,6 +95,7 @@ public class ParecerController {
 	}
 
 	@PutMapping("/update/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<MensagemResponseDTO> updateParecer(@PathVariable("codigo") final long codigo,
 			@Valid @RequestBody final ParecerRequestDTO parecerRequestDTO) {
 		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);

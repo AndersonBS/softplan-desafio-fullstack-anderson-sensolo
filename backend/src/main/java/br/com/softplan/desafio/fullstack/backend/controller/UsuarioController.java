@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +37,10 @@ import br.com.softplan.desafio.fullstack.backend.repository.UsuarioRepository;
 public class UsuarioController {
 
 	@Autowired UsuarioRepository usuarioRepository;
+	@Autowired PasswordEncoder passwordEncoder;
 
 	@GetMapping("/get")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<List<UsuarioResponseDTO>> getUsuarios() {
 		final List<UsuarioResponseDTO> usuarioResponseDTOs = new ArrayList<>();
 		for (final Usuario usuario : this.usuarioRepository.findAll()) {
@@ -46,6 +50,7 @@ public class UsuarioController {
 	}
 
 	@GetMapping("/get/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<UsuarioResponseDTO> getUsuario(@PathVariable final Long codigo) {
 		final Optional<Usuario> usuarioOptional = this.usuarioRepository.findById(codigo);
 		if (usuarioOptional.isPresent()) {
@@ -55,6 +60,7 @@ public class UsuarioController {
 	}
 
 	@DeleteMapping("/delete/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<Void> deleteUsuario(@PathVariable final Long codigo) {
 		final Optional<Usuario> usuarioOptional = this.usuarioRepository.findById(codigo);
 		if (usuarioOptional.isPresent()) {
@@ -65,6 +71,7 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/create")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<MensagemResponseDTO> createUsuario(@Valid @RequestBody final UsuarioRequestDTO usuarioRequestDTO) {
 		final MensagemResponseDTO mensagemDadosUnicosJaCadastrados = this.verificarDadosUnicosJaCadastrados(usuarioRequestDTO);
 		if (mensagemDadosUnicosJaCadastrados != null) {
@@ -75,7 +82,7 @@ public class UsuarioController {
 		usuario.setNome(usuarioRequestDTO.getNome());
 		usuario.setLogin(usuarioRequestDTO.getLogin());
 		usuario.setEmail(usuarioRequestDTO.getEmail());
-		usuario.setSenha(usuarioRequestDTO.getSenha());
+		usuario.setSenha(this.passwordEncoder.encode(usuarioRequestDTO.getSenha()));
 		usuario.setPermissao(PermissaoUsuario.getPermissaoUsuario(usuarioRequestDTO.getPermissao()));
 		usuario.setDataInclusao(new Date());
 
@@ -84,6 +91,7 @@ public class UsuarioController {
 	}
 
 	@PutMapping("/update/{codigo}")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<MensagemResponseDTO> updateUsuario(@PathVariable("codigo") final long codigo,
 			@Valid @RequestBody final UsuarioRequestDTO usuarioRequestDTO) {
 		final Optional<Usuario> usuarioOptional = this.usuarioRepository.findById(codigo);
@@ -99,6 +107,7 @@ public class UsuarioController {
 		usuarioOptional.get().setNome(usuarioRequestDTO.getNome());
 		usuarioOptional.get().setLogin(usuarioRequestDTO.getLogin());
 		usuarioOptional.get().setEmail(usuarioRequestDTO.getEmail());
+		usuarioOptional.get().setSenha(this.passwordEncoder.encode(usuarioRequestDTO.getSenha()));
 		usuarioOptional.get().setPermissao(PermissaoUsuario.getPermissaoUsuario(usuarioRequestDTO.getPermissao()));
 
 		this.usuarioRepository.save(usuarioOptional.get());

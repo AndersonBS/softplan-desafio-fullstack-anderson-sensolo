@@ -45,6 +45,7 @@ public enum StatusProcesso {
 
 	private static final Map<String, StatusProcesso> stringValueMap;
 	static {
+		// Utilizado HashMap para otimizar consultas. Complexidade O(1)
 		final Map<String, StatusProcesso> tmpMap = Maps.newHashMap();
 		for (final StatusProcesso statusProcesso : StatusProcesso.values()) {
 			tmpMap.put(statusProcesso.getNome(), statusProcesso);
