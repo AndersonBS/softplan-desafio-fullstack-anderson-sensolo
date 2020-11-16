@@ -1,7 +1,7 @@
 package br.com.softplan.desafio.fullstack.backend.dto.response;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.text.SimpleDateFormat;
 import br.com.softplan.desafio.fullstack.backend.model.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,16 +24,18 @@ public class UsuarioResponseDTO implements Serializable {
 	private String nome;
 	private String login;
 	private String email;
+	private String senha;
 	private String permissao;
-	private Date dataInclusao;
+	private String dataInclusao;
 
 	public UsuarioResponseDTO(final Usuario usuario) {
 		this.codigo = usuario.getCodigo();
 		this.nome = usuario.getNome();
 		this.login = usuario.getLogin();
 		this.email = usuario.getEmail();
+		this.senha = usuario.getSenha();
 		this.permissao = usuario.getPermissao().getNome();
-		this.dataInclusao = usuario.getDataInclusao();
+		this.dataInclusao = new SimpleDateFormat("yyyy-MM-dd").format(usuario.getDataInclusao());
 	}
 
 }

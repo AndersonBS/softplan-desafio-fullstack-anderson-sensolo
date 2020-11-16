@@ -73,7 +73,7 @@ public class UsuarioController {
 	@PostMapping("/create")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<MensagemResponseDTO> createUsuario(@Valid @RequestBody final UsuarioRequestDTO usuarioRequestDTO) {
-		final MensagemResponseDTO mensagemDadosUnicosJaCadastrados = this.verificarDadosUnicosJaCadastrados(usuarioRequestDTO);
+		final MensagemResponseDTO mensagemDadosUnicosJaCadastrados = this.verificarDadosUnicosJaCadastrados(0L, usuarioRequestDTO);
 		if (mensagemDadosUnicosJaCadastrados != null) {
 			return ResponseEntity.badRequest().body(mensagemDadosUnicosJaCadastrados);
 		}
@@ -99,7 +99,7 @@ public class UsuarioController {
 			return ResponseEntity.notFound().build();
 		}
 
-		final MensagemResponseDTO mensagemDadosUnicosJaCadastrados = this.verificarDadosUnicosJaCadastrados(usuarioRequestDTO);
+		final MensagemResponseDTO mensagemDadosUnicosJaCadastrados = this.verificarDadosUnicosJaCadastrados(codigo, usuarioRequestDTO);
 		if (mensagemDadosUnicosJaCadastrados != null) {
 			return ResponseEntity.badRequest().body(mensagemDadosUnicosJaCadastrados);
 		}
@@ -107,18 +107,21 @@ public class UsuarioController {
 		usuarioOptional.get().setNome(usuarioRequestDTO.getNome());
 		usuarioOptional.get().setLogin(usuarioRequestDTO.getLogin());
 		usuarioOptional.get().setEmail(usuarioRequestDTO.getEmail());
-		usuarioOptional.get().setSenha(this.passwordEncoder.encode(usuarioRequestDTO.getSenha()));
+		if (!usuarioOptional.get().getSenha().equals(usuarioRequestDTO.getSenha())) {
+			usuarioOptional.get().setSenha(this.passwordEncoder.encode(usuarioRequestDTO.getSenha()));
+		}
 		usuarioOptional.get().setPermissao(PermissaoUsuario.getPermissaoUsuario(usuarioRequestDTO.getPermissao()));
 
 		this.usuarioRepository.save(usuarioOptional.get());
 		return ResponseEntity.noContent().build();
 	}
 
-	private MensagemResponseDTO verificarDadosUnicosJaCadastrados(final UsuarioRequestDTO usuarioRequestDTO) {
-		if (this.usuarioRepository.existsByLogin(usuarioRequestDTO.getLogin())) {
+	private MensagemResponseDTO verificarDadosUnicosJaCadastrados(final Long codigoUsuario,
+			final UsuarioRequestDTO usuarioRequestDTO) {
+		if (this.usuarioRepository.existsAnotherByLogin(codigoUsuario, usuarioRequestDTO.getLogin())) {
 			return new MensagemResponseDTO("Já existe um usuário com este login!");
 		}
-		if (this.usuarioRepository.existsByEmail(usuarioRequestDTO.getEmail())) {
+		if (this.usuarioRepository.existsAnotherByEmail(codigoUsuario, usuarioRequestDTO.getEmail())) {
 			return new MensagemResponseDTO("Já existe um usuário com este e-mail!");
 		}
 		return null;
