@@ -157,7 +157,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/delete/2",
+					"raw": "http://localhost:8080/usuario/delete/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -166,7 +166,7 @@
 					"path": [
 						"usuario",
 						"delete",
-						"2"
+						"3"
 					]
 				}
 			},
@@ -457,6 +457,9 @@
 		},
 		{
 			"name": "getProcessoUsuarios",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -468,7 +471,7 @@
 						}
 					]
 				},
-				"method": "PUT",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -480,7 +483,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/2/add/usuario/3",
+					"raw": "http://localhost:8080/processo/3/get/usuarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -488,10 +491,9 @@
 					"port": "8080",
 					"path": [
 						"processo",
-						"2",
-						"add",
-						"usuario",
-						"3"
+						"3",
+						"get",
+						"usuarios"
 					]
 				}
 			},
@@ -522,7 +524,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/2/add/usuario/3",
+					"raw": "http://localhost:8080/processo/3/add/usuario/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -530,7 +532,7 @@
 					"port": "8080",
 					"path": [
 						"processo",
-						"2",
+						"3",
 						"add",
 						"usuario",
 						"3"
@@ -564,7 +566,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/2/remove/usuario/2",
+					"raw": "http://localhost:8080/processo/3/remove/usuario/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -572,10 +574,97 @@
 					"port": "8080",
 					"path": [
 						"processo",
-						"2",
+						"3",
 						"remove",
 						"usuario",
-						"2"
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getResponsaveis",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/processo/get/responsaveis",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"processo",
+						"get",
+						"responsaveis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getFinalizadores",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/processo/4/get/finalizadores",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"processo",
+						"4",
+						"get",
+						"finalizadores"
 					]
 				}
 			},
