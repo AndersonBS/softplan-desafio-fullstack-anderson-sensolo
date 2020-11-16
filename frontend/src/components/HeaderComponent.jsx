@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import AuthenticationService from "../services/authenticationService";
-import '../styles/headerStyle.css';
 
 class HeaderComponent extends Component {
     constructor(props) {
@@ -27,7 +26,7 @@ class HeaderComponent extends Component {
         return (
             <nav className="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
                 <a className="navbar-brand .align-middle" href="/home">
-                    <img className="my-brand" src={process.env.PUBLIC_URL + '/favicon-32x32.png'} alt="Softplan" />
+                    <img className="px-2" src={process.env.PUBLIC_URL + '/favicon-32x32.png'} alt="Softplan" />
                     Softplan
                 </a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
@@ -53,10 +52,10 @@ class HeaderComponent extends Component {
                             </li>
                         }
                     </ul>
-                    <span className="navbar-text">
+                    <span className="navbar-text px-4">
                         {this.state.codigo} - {this.state.nome} ({this.state.email})
                     </span>
-                    <button className="btn btn-outline-danger my-2 my-sm-0" onClick={this.logout}>Sair</button>
+                    <button className="btn btn-outline-danger" onClick={this.logout}>Sair</button>
                 </div>
             </nav>
         );

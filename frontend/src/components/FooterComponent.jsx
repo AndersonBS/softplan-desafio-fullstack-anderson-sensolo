@@ -2,10 +2,6 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 
 class FooterComponent extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <footer className="footer fixed-bottom bg-dark text-center">
