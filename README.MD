@@ -38,6 +38,24 @@
 
 Observação: Aprendi React essa semana para fazer o desafio, pois diariamente trabalho com JSP e Thymeleaf no frontend. Portanto, não tenho certeza se a estrutura do frontend ou a forma como foi implementado segue as boas práticas de desenvolvimento. Contudo, "Everything just works" :)
 
+### Rodando a aplicação
+Requisitos:
+- Servidor MySql com usuário root e senha root rodando local na porta 3306 (ou alterar no application.properties do backend)
+- Spring Tool Suite 4 (STS)
+- Node Package Manager (NPM)
+
+Instruções:
+- Certifique-se de que o servidor MySQL está rodando e respondendo
+- Importe o projeto backend no STS como uma aplicação maven e inicie pelo Boot Dashboard
+- Inicie o projeto frontend através do comando npm start
+
+Observação: Infelizmente não tive tempo de disponibilizar com docker.
+
+### Melhorias a serem feitas
+- Adicionar busca e paginação nas listas de registros
+- Adicionar página para visualização de auditorias para o usuário Administrador
+- Adicionar controle de logs
+
 ---
 
 Seja parte da jornada de transformação digital no Brasil.
