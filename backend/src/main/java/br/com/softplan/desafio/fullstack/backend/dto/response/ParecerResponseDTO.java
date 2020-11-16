@@ -1,7 +1,7 @@
 package br.com.softplan.desafio.fullstack.backend.dto.response;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.text.SimpleDateFormat;
 import br.com.softplan.desafio.fullstack.backend.model.Parecer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,14 +22,14 @@ public class ParecerResponseDTO implements Serializable {
 
 	private Long codigo;
 	private String descricao;
-	private Date data;
+	private String data;
 	private String processo;
 	private String autor;
 
 	public ParecerResponseDTO(final Parecer parecer) {
 		this.codigo = parecer.getCodigo();
 		this.descricao = parecer.getDescricao();
-		this.data = parecer.getData();
+		this.data = new SimpleDateFormat("dd/MM/yyyy").format(parecer.getData());
 		this.processo = parecer.getProcesso().getCodigoNome();
 		this.autor = parecer.getAutor().getCodigoNome();
 	}

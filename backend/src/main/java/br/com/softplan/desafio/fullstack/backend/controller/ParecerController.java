@@ -8,6 +8,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +24,14 @@ import br.com.softplan.desafio.fullstack.backend.dto.request.ParecerRequestDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ParecerResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.model.Parecer;
+import br.com.softplan.desafio.fullstack.backend.model.PermissaoUsuario;
 import br.com.softplan.desafio.fullstack.backend.model.Processo;
+import br.com.softplan.desafio.fullstack.backend.model.StatusProcesso;
 import br.com.softplan.desafio.fullstack.backend.model.Usuario;
 import br.com.softplan.desafio.fullstack.backend.repository.ParecerRepository;
 import br.com.softplan.desafio.fullstack.backend.repository.ProcessoRepository;
 import br.com.softplan.desafio.fullstack.backend.repository.UsuarioRepository;
+import br.com.softplan.desafio.fullstack.backend.security.model.JwtUserDetails;
 
 /**
  * Classe que processa as requisições relacionadas ao parecer.
@@ -46,8 +52,16 @@ public class ParecerController {
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<List<ParecerResponseDTO>> getPareceres() {
 		final List<ParecerResponseDTO> parecerResponseDTOs = new ArrayList<>();
-		for (final Parecer parecer : this.parecerRepository.findAll()) {
-			parecerResponseDTOs.add(new ParecerResponseDTO(parecer));
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
+			final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
+			for (final Parecer parecer : this.parecerRepository.findAllByAutor(codigoUsuarioAutenticado)) {
+				parecerResponseDTOs.add(new ParecerResponseDTO(parecer));
+			}
+		} else {
+			for (final Parecer parecer : this.parecerRepository.findAll()) {
+				parecerResponseDTOs.add(new ParecerResponseDTO(parecer));
+			}
 		}
 		return ResponseEntity.ok(parecerResponseDTOs);
 	}
@@ -55,7 +69,14 @@ public class ParecerController {
 	@GetMapping("/get/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<ParecerResponseDTO> getParecer(@PathVariable final Long codigo) {
-		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);
+		final Optional<Parecer> parecerOptional;
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
+			final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
+			parecerOptional = this.parecerRepository.findByCodigoAndAutor(codigoUsuarioAutenticado, codigo);
+		} else {
+			parecerOptional = this.parecerRepository.findById(codigo);
+		}
 		if (parecerOptional.isPresent()) {
 			return ResponseEntity.ok(new ParecerResponseDTO(parecerOptional.get()));
 		}
@@ -63,7 +84,7 @@ public class ParecerController {
 	}
 
 	@DeleteMapping("/delete/{codigo}")
-	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<Void> deleteParecer(@PathVariable final Long codigo) {
 		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);
 		if (parecerOptional.isPresent()) {
@@ -90,6 +111,11 @@ public class ParecerController {
 		parecer.setProcesso(processoOptional.get());
 		parecer.setAutor(autorOptional.get());
 
+		if (StatusProcesso.AGUARDANDO_PARECER.equals(processoOptional.get().getStatus()) &&
+				processoOptional.get().getUsuarios().size() == processoOptional.get().getPareceres().size() + 1) {
+			processoOptional.get().setStatus(StatusProcesso.FINALIZADO);
+		}
+
 		this.parecerRepository.save(parecer);
 		return ResponseEntity.noContent().build();
 	}
@@ -113,8 +139,6 @@ public class ParecerController {
 
 		parecerOptional.get().setDescricao(parecerRequestDTO.getDescricao());
 		parecerOptional.get().setData(new Date());
-		parecerOptional.get().setProcesso(processoOptional.get());
-		parecerOptional.get().setAutor(autorOptional.get());
 
 		this.parecerRepository.save(parecerOptional.get());
 		return ResponseEntity.noContent().build();
