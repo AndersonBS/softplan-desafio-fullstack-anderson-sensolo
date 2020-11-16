@@ -16,6 +16,11 @@ import br.com.softplan.desafio.fullstack.backend.model.Processo;
 @Repository
 public interface ProcessoRepository extends JpaRepository<Processo, Long> {
 
+	/**
+	 * Lista os processos pendentes de parecer por autor (somente usuário finalizador)
+	 * @param codigoUsuarioFinalizador
+	 * @return
+	 */
 	@Query(" select pro from Processo pro " +
 			"    inner join pro.usuarios usu " +
 			"where usu.codigo = :codigoUsuarioFinalizador " +
@@ -24,6 +29,12 @@ public interface ProcessoRepository extends JpaRepository<Processo, Long> {
 			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
 	List<Processo> findAllPendentesUsuarioFinalizador(final Long codigoUsuarioFinalizador);
 
+	/**
+	 * Busca um processo pendente de parecer pelo código e autor (somente usuário finalizador)
+	 * @param codigoUsuarioFinalizador
+	 * @param codigoProcesso
+	 * @return
+	 */
 	@Query(" select pro from Processo pro " +
 			"    inner join pro.usuarios usu " +
 			"where usu.codigo = :codigoUsuarioFinalizador " +
@@ -33,6 +44,12 @@ public interface ProcessoRepository extends JpaRepository<Processo, Long> {
 			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
 	Optional<Processo> findPendenteUsuarioFinalizador(final Long codigoUsuarioFinalizador, final Long codigoProcesso);
 
+	/**
+	 * Verifica se existe o vínculo do usuário no processo
+	 * @param codigoProcesso
+	 * @param codigoUsuario
+	 * @return
+	 */
 	@Query(" select case when count(pro) > 0 then true else false end " +
 			"    from Processo pro " +
 			"        inner join pro.usuarios pu " +

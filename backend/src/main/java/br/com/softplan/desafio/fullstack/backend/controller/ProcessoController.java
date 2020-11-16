@@ -49,21 +49,30 @@ public class ProcessoController {
 	@Autowired UsuarioRepository usuarioRepository;
 	@Autowired ParecerRepository parecerRepository;
 
+	/**
+	 * Lista os processos
+	 * @return
+	 */
 	@GetMapping("/get")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<List<ProcessoResponseDTO>> getProcessos() {
 		final List<ProcessoResponseDTO> processoResponseDTOs = new ArrayList<>();
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
+
+		// Listar processos com filtro por usuário caso seja finalizador
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
 			for (final Processo processo : this.processoRepository.findAllPendentesUsuarioFinalizador(codigoUsuarioAutenticado)) {
+				// Verifica se o usuário logado deve incluir parecer no processo
 				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
 						processo.getCodigo(), codigoUsuarioAutenticado) &&
 						this.processoRepository.existsProcessoUsuario(processo.getCodigo(), codigoUsuarioAutenticado);
 				processoResponseDTOs.add(new ProcessoResponseDTO(processo, parecerPendente));
 			}
 		} else {
+			// Caso seja administrador ou triador pode listar todos os processos
 			for (final Processo processo : this.processoRepository.findAll()) {
+				// Verifica se o usuário logado deve incluir parecer no processo
 				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
 						processo.getCodigo(), codigoUsuarioAutenticado) &&
 						this.processoRepository.existsProcessoUsuario(processo.getCodigo(), codigoUsuarioAutenticado);
@@ -73,18 +82,27 @@ public class ProcessoController {
 		return ResponseEntity.ok(processoResponseDTOs);
 	}
 
+	/**
+	 * Busca um processo pelo código
+	 * @param codigo
+	 * @return
+	 */
 	@GetMapping("/get/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<ProcessoResponseDTO> getProcesso(@PathVariable final Long codigo) {
 		Optional<Processo> processoOptional;
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
+
+		// Buscar processo com filtro por usuário caso seja finalizador
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
 			processoOptional = this.processoRepository.findPendenteUsuarioFinalizador(codigoUsuarioAutenticado, codigo);
 		} else {
+			// Caso seja administrador ou triador pode buscar em todos os processos
 			processoOptional = this.processoRepository.findById(codigo);
 		}
 		if (processoOptional.isPresent()) {
+			// Verifica se o usuário logado deve incluir parecer no processo
 			final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
 					processoOptional.get().getCodigo(), codigoUsuarioAutenticado) &&
 					this.processoRepository.existsProcessoUsuario(processoOptional.get().getCodigo(), codigoUsuarioAutenticado);
@@ -93,6 +111,11 @@ public class ProcessoController {
 		return ResponseEntity.notFound().build();
 	}
 
+	/**
+	 * Apaga um processo pelo código
+	 * @param codigo
+	 * @return
+	 */
 	@DeleteMapping("/delete/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<Void> deleteProcesso(@PathVariable final Long codigo) {
@@ -104,6 +127,11 @@ public class ProcessoController {
 		return ResponseEntity.notFound().build();
 	}
 
+	/**
+	 * Cria um processo
+	 * @param processoRequestDTO
+	 * @return
+	 */
 	@PostMapping("/create")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<MensagemResponseDTO> createProcesso(@Valid @RequestBody final ProcessoRequestDTO processoRequestDTO) {
@@ -112,6 +140,7 @@ public class ProcessoController {
 			return ResponseEntity.badRequest().body(new MensagemResponseDTO("Responsável não encontrado!"));
 		}
 
+		// Cria e alimenta o novo processo
 		final Processo processo = new Processo();
 		processo.setNome(processoRequestDTO.getNome());
 		processo.setDescricao(processoRequestDTO.getDescricao());
@@ -119,83 +148,124 @@ public class ProcessoController {
 		processo.setDataInicio(new Date());
 		processo.setResponsavel(responsavelOptional.get());
 
+		// Salva o processo
 		this.processoRepository.save(processo);
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Atualiza um processo pelo código
+	 * @param codigo
+	 * @param processoRequestDTO
+	 * @return
+	 */
 	@PutMapping("/update/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<MensagemResponseDTO> updateProcesso(@PathVariable("codigo") final long codigo,
 			@Valid @RequestBody final ProcessoRequestDTO processoRequestDTO) {
+		// Verificação e tratamento caso o processo não tenha sido encontrado
 		final Optional<Processo> processoOptional = this.processoRepository.findById(codigo);
 		if (!processoOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
 
+		// Verificação e tratamento caso o responsável não tenha sido encontrado
 		final Optional<Usuario> responsavelOptional = this.usuarioRepository.findById(processoRequestDTO.getResponsavel());
 		if (!responsavelOptional.isPresent()) {
 			return ResponseEntity.badRequest().body(new MensagemResponseDTO("Responsável não encontrado!"));
 		}
 
+		// Atualiza os dados do processo
 		processoOptional.get().setNome(processoRequestDTO.getNome());
 		processoOptional.get().setDescricao(processoRequestDTO.getDescricao());
 		processoOptional.get().setResponsavel(responsavelOptional.get());
 
+		// Salva o processo
 		this.processoRepository.save(processoOptional.get());
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Vincula um usuário a um processo para prestar parecer
+	 * @param codigoProcesso
+	 * @param codigoUsuario
+	 * @return
+	 */
 	@PutMapping("/{codigoProcesso}/add/usuario/{codigoUsuario}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<MensagemResponseDTO> addProcessoUsuario(@PathVariable("codigoProcesso") final long codigoProcesso,
 			@PathVariable("codigoUsuario") final long codigoUsuario) {
 		final Optional<Processo> processoOptional = this.processoRepository.findById(codigoProcesso);
 		final Optional<Usuario> usuarioOptional = this.usuarioRepository.findById(codigoUsuario);
+
+		// Verificação e tratamento caso o processo ou o usuário não tenham sido encontrados
 		final MensagemResponseDTO mensagemProcessoUsuarioNaoEncontrados =
 				this.verificarExistenciaProcessoUsuario(processoOptional, usuarioOptional);
 		if (mensagemProcessoUsuarioNaoEncontrados != null) {
 			return ResponseEntity.badRequest().body(mensagemProcessoUsuarioNaoEncontrados);
 		}
+
+		// Proteção para não vincular o mesmo usuário duas vezes no processo
 		if (processoOptional.get().getUsuarios().contains(usuarioOptional.get())) {
 			return ResponseEntity.badRequest().body(new MensagemResponseDTO("Usuário já cadastrado no processo!"));
 		}
 
+		// Inclui o usuário no processo
 		processoOptional.get().getUsuarios().add(usuarioOptional.get());
 
+		// Atualiza o status do processo para aguardando parecer caso o status do processo seja novo ou finalizado
 		if (StatusProcesso.NOVO.equals(processoOptional.get().getStatus()) ||
 				StatusProcesso.FINALIZADO.equals(processoOptional.get().getStatus())) {
 			processoOptional.get().setStatus(StatusProcesso.AGUARDANDO_PARECER);
 		}
 
+		// Salva o processo
 		this.processoRepository.save(processoOptional.get());
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Remove o vínculo de um usuário do processo
+	 * @param codigoProcesso
+	 * @param codigoUsuario
+	 * @return
+	 */
 	@PutMapping("/{codigoProcesso}/remove/usuario/{codigoUsuario}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<MensagemResponseDTO> removeProcessoUsuario(@PathVariable("codigoProcesso") final long codigoProcesso,
 			@PathVariable("codigoUsuario") final long codigoUsuario) {
 		final Optional<Processo> processoOptional = this.processoRepository.findById(codigoProcesso);
 		final Optional<Usuario> usuarioOptional = this.usuarioRepository.findById(codigoUsuario);
+
+		// Verificação e tratamento caso o processo ou o usuário não tenham sido encontrados
 		final MensagemResponseDTO mensagemProcessoUsuarioNaoEncontrados =
 				this.verificarExistenciaProcessoUsuario(processoOptional, usuarioOptional);
 		if (mensagemProcessoUsuarioNaoEncontrados != null) {
 			return ResponseEntity.badRequest().body(mensagemProcessoUsuarioNaoEncontrados);
 		}
 
+		// Remove o usuário do processo
 		processoOptional.get().getUsuarios().remove(usuarioOptional.get());
-		this.processoRepository.save(processoOptional.get());
 
+		// Salva o processo
+		this.processoRepository.save(processoOptional.get());
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Lista os usuários vinculados ao processo para prestar parecer
+	 * @param codigoProcesso
+	 * @return
+	 */
 	@GetMapping("/{codigoProcesso}/get/usuarios")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<List<ProcessoUsuarioResponseDTO>> getProcessoUsuarios(@PathVariable("codigoProcesso") final long codigoProcesso) {
+		// Verificação e tratamento caso o processo não tenha sido encontrado
 		final Optional<Processo> processoOptional = this.processoRepository.findById(codigoProcesso);
 		if (!processoOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
+
 		final List<ProcessoUsuarioResponseDTO> processoUsuarioResponseDTOs = new ArrayList<>();
 		for (final Usuario usuario : processoOptional.get().getUsuarios()) {
 			processoUsuarioResponseDTOs.add(new ProcessoUsuarioResponseDTO(processoOptional.get(), usuario));
@@ -203,6 +273,10 @@ public class ProcessoController {
 		return ResponseEntity.ok(processoUsuarioResponseDTOs);
 	}
 
+	/**
+	 * Lista os usuários que podem ser responsáveis por processos
+	 * @return
+	 */
 	@GetMapping("/get/responsaveis")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<List<ResponsavelResponseDTO>> getResponsaveis() {
@@ -213,6 +287,11 @@ public class ProcessoController {
 		return ResponseEntity.ok(responsavelResponseDTOs);
 	}
 
+	/**
+	 * Lista os usuários que podem incluir pareceres nos processos
+	 * @param codigoProcesso
+	 * @return
+	 */
 	@GetMapping("/{codigoProcesso}/get/finalizadores")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
 	public ResponseEntity<List<ResponsavelResponseDTO>> getFinalizadores(@PathVariable("codigoProcesso") final long codigoProcesso) {
@@ -223,6 +302,12 @@ public class ProcessoController {
 		return ResponseEntity.ok(responsavelResponseDTOs);
 	}
 
+	/**
+	 * Verifica a existência do processo e do usuário
+	 * @param processoOptional
+	 * @param usuarioOptional
+	 * @return
+	 */
 	private MensagemResponseDTO verificarExistenciaProcessoUsuario(final Optional<Processo> processoOptional,
 			final Optional<Usuario> usuarioOptional) {
 		if (!processoOptional.isPresent()) {

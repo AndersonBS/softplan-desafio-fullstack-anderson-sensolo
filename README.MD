@@ -21,10 +21,11 @@
 
 ### Suposições do desafio
 - Registros podem ser editados e removidos
-- 
+- Registros só podem ser removidos após seus vínculos serem manualmente removidos também
 - Existem 3 permissões de usuário: Administrador, Triador e Finalizador
 - Usuários Administradores possuem acesso a tudo
 - Cada usuário pode possuir apenas uma das 3 permissões
+- O login e o e-mail dos usuários devem ser únicos no sistema
 - Existem 3 status de processo: Novo, Aguardando Parecer e Finalizado
 - Somente usuários Administradores e Triadores podem ser responsáveis por processos
 - Somente usuários Administradores e Finalizadores podem ser vinculados aos processos para incluirem pareceres

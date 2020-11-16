@@ -14,6 +14,12 @@ import br.com.softplan.desafio.fullstack.backend.model.Parecer;
 
 public interface ParecerRepository extends JpaRepository<Parecer, Long> {
 
+	/**
+	 * Verifica a existência do parecer por processo e autor
+	 * @param codigoProcesso
+	 * @param codigoAutor
+	 * @return
+	 */
 	@Query(" select case when count(par) > 0 then true else false end " +
 			"    from Parecer par " +
 			"        inner join par.processo pro " +
@@ -22,9 +28,20 @@ public interface ParecerRepository extends JpaRepository<Parecer, Long> {
 			"        and aut.codigo = :codigoAutor ")
 	boolean existsByProcessoAndAutor(final Long codigoProcesso, final Long codigoAutor);
 
+	/**
+	 * Lista os pareceres por autor
+	 * @param codigoAutor
+	 * @return
+	 */
 	@Query(" select par from Parecer par inner join par.autor aut where aut.codigo = :codigoAutor ")
 	List<Parecer> findAllByAutor(final Long codigoAutor);
 
+	/**
+	 * Busca um parecer pelo código e autor
+	 * @param codigoAutor
+	 * @param codigoParecer
+	 * @return
+	 */
 	@Query(" select par from Parecer par inner join par.autor aut where aut.codigo = :codigoAutor and par.codigo = :codigoParecer ")
 	Optional<Parecer> findByCodigoAndAutor(final Long codigoAutor, final Long codigoParecer);
 

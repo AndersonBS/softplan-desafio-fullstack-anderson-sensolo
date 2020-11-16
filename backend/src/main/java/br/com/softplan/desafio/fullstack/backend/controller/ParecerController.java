@@ -48,17 +48,24 @@ public class ParecerController {
 	@Autowired ProcessoRepository processoRepository;
 	@Autowired UsuarioRepository usuarioRepository;
 
+	/**
+	 * Lista os pareceres
+	 * @return
+	 */
 	@GetMapping("/get")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<List<ParecerResponseDTO>> getPareceres() {
 		final List<ParecerResponseDTO> parecerResponseDTOs = new ArrayList<>();
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		// Listar pareceres com filtro por usuário caso seja finalizador
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
 			final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
 			for (final Parecer parecer : this.parecerRepository.findAllByAutor(codigoUsuarioAutenticado)) {
 				parecerResponseDTOs.add(new ParecerResponseDTO(parecer));
 			}
 		} else {
+			// Caso seja administrador pode listar todos os pareceres
 			for (final Parecer parecer : this.parecerRepository.findAll()) {
 				parecerResponseDTOs.add(new ParecerResponseDTO(parecer));
 			}
@@ -66,15 +73,23 @@ public class ParecerController {
 		return ResponseEntity.ok(parecerResponseDTOs);
 	}
 
+	/**
+	 * Busca um parecer pelo código
+	 * @param codigo
+	 * @return
+	 */
 	@GetMapping("/get/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<ParecerResponseDTO> getParecer(@PathVariable final Long codigo) {
 		final Optional<Parecer> parecerOptional;
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		// Buscar parecer com filtro por usuário caso seja finalizador
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
 			final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
 			parecerOptional = this.parecerRepository.findByCodigoAndAutor(codigoUsuarioAutenticado, codigo);
 		} else {
+			// Caso seja administrador pode buscar em todos os pareceres
 			parecerOptional = this.parecerRepository.findById(codigo);
 		}
 		if (parecerOptional.isPresent()) {
@@ -83,6 +98,11 @@ public class ParecerController {
 		return ResponseEntity.notFound().build();
 	}
 
+	/**
+	 * Apaga um parecer pelo código
+	 * @param codigo
+	 * @return
+	 */
 	@DeleteMapping("/delete/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<Void> deleteParecer(@PathVariable final Long codigo) {
@@ -94,23 +114,32 @@ public class ParecerController {
 		return ResponseEntity.notFound().build();
 	}
 
+	/**
+	 * Cria um parecer
+	 * @param parecerRequestDTO
+	 * @return
+	 */
 	@PostMapping("/create")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<MensagemResponseDTO> createParecer(@Valid @RequestBody final ParecerRequestDTO parecerRequestDTO) {
 		final Optional<Processo> processoOptional = this.processoRepository.findById(parecerRequestDTO.getProcesso());
 		final Optional<Usuario> autorOptional = this.usuarioRepository.findById(parecerRequestDTO.getAutor());
+
+		// Verificação e tratamento caso o processo ou o usuário não tenham sido encontrados
 		final MensagemResponseDTO mensagemProcessoAutorNaoEncontrados =
 				this.verificarExistenciaProcessoAutor(processoOptional, autorOptional);
 		if (mensagemProcessoAutorNaoEncontrados != null) {
 			return ResponseEntity.badRequest().body(mensagemProcessoAutorNaoEncontrados);
 		}
 
+		// Cria e alimenta o novo parecer
 		final Parecer parecer = new Parecer();
 		parecer.setDescricao(parecerRequestDTO.getDescricao());
 		parecer.setData(new Date());
 		parecer.setProcesso(processoOptional.get());
 		parecer.setAutor(autorOptional.get());
 
+		// Finaliza o processo caso o status do processo for aguardando parecer e este novo parecer for o último
 		if (StatusProcesso.AGUARDANDO_PARECER.equals(processoOptional.get().getStatus()) &&
 				processoOptional.get().getUsuarios().size() == processoOptional.get().getPareceres().size() + 1) {
 			processoOptional.get().setStatus(StatusProcesso.FINALIZADO);
@@ -120,10 +149,17 @@ public class ParecerController {
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Atualiza um parecer pelo código
+	 * @param codigo
+	 * @param parecerRequestDTO
+	 * @return
+	 */
 	@PutMapping("/update/{codigo}")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<MensagemResponseDTO> updateParecer(@PathVariable("codigo") final long codigo,
 			@Valid @RequestBody final ParecerRequestDTO parecerRequestDTO) {
+		// Verificação e tratamento caso o parecer não tenha sido encontrado
 		final Optional<Parecer> parecerOptional = this.parecerRepository.findById(codigo);
 		if (!parecerOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
@@ -131,12 +167,15 @@ public class ParecerController {
 
 		final Optional<Processo> processoOptional = this.processoRepository.findById(parecerRequestDTO.getProcesso());
 		final Optional<Usuario> autorOptional = this.usuarioRepository.findById(parecerRequestDTO.getAutor());
+
+		// Verificação e tratamento caso o processo ou o usuário não tenham sido encontrados
 		final MensagemResponseDTO mensagemProcessoAutorNaoEncontrados =
 				this.verificarExistenciaProcessoAutor(processoOptional, autorOptional);
 		if (mensagemProcessoAutorNaoEncontrados != null) {
 			return ResponseEntity.badRequest().body(mensagemProcessoAutorNaoEncontrados);
 		}
 
+		// Atualiza os dados do parecer
 		parecerOptional.get().setDescricao(parecerRequestDTO.getDescricao());
 		parecerOptional.get().setData(new Date());
 
@@ -144,6 +183,12 @@ public class ParecerController {
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Verifica a existência do processo e do autor
+	 * @param processoOptional
+	 * @param autorOptional
+	 * @return
+	 */
 	private MensagemResponseDTO verificarExistenciaProcessoAutor(final Optional<Processo> processoOptional,
 			final Optional<Usuario> autorOptional) {
 		if (!processoOptional.isPresent()) {
