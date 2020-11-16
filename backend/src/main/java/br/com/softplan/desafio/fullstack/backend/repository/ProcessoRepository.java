@@ -33,4 +33,11 @@ public interface ProcessoRepository extends JpaRepository<Processo, Long> {
 			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
 	Optional<Processo> findPendenteUsuarioFinalizador(final Long codigoUsuarioFinalizador, final Long codigoProcesso);
 
+	@Query(" select case when count(pro) > 0 then true else false end " +
+			"    from Processo pro " +
+			"        inner join pro.usuarios pu " +
+			"    where pro.codigo = :codigoProcesso " +
+			"        and pu.codigo = :codigoUsuario ")
+	boolean existsProcessoUsuario(final Long codigoProcesso, final Long codigoUsuario);
+
 }

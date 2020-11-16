@@ -66,11 +66,11 @@ public class Processo {
 	@JoinColumn(name = "CODUSUARIO", nullable = false)
 	private Usuario responsavel;
 	
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PROCESSO_USUARIO", joinColumns = @JoinColumn(name = "CODPROCESSO"), inverseJoinColumns = @JoinColumn(name = "CODUSUARIO"))
 	private List<Usuario> usuarios = new ArrayList<>();
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CODPROCESSO")
 	private List<Parecer> pareceres = new ArrayList<>();
 

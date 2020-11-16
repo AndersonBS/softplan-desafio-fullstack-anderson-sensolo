@@ -24,10 +24,12 @@ import br.com.softplan.desafio.fullstack.backend.dto.request.ProcessoRequestDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoUsuarioResponseDTO;
+import br.com.softplan.desafio.fullstack.backend.dto.response.ResponsavelResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.model.PermissaoUsuario;
 import br.com.softplan.desafio.fullstack.backend.model.Processo;
 import br.com.softplan.desafio.fullstack.backend.model.StatusProcesso;
 import br.com.softplan.desafio.fullstack.backend.model.Usuario;
+import br.com.softplan.desafio.fullstack.backend.repository.ParecerRepository;
 import br.com.softplan.desafio.fullstack.backend.repository.ProcessoRepository;
 import br.com.softplan.desafio.fullstack.backend.repository.UsuarioRepository;
 import br.com.softplan.desafio.fullstack.backend.security.model.JwtUserDetails;
@@ -45,20 +47,27 @@ public class ProcessoController {
 
 	@Autowired ProcessoRepository processoRepository;
 	@Autowired UsuarioRepository usuarioRepository;
+	@Autowired ParecerRepository parecerRepository;
 
 	@GetMapping("/get")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR') or hasAuthority('FINALIZADOR')")
 	public ResponseEntity<List<ProcessoResponseDTO>> getProcessos() {
 		final List<ProcessoResponseDTO> processoResponseDTOs = new ArrayList<>();
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
-			for (final Processo processo : this.processoRepository.findAllPendentesUsuarioFinalizador(
-					((JwtUserDetails) authentication.getPrincipal()).getId())) {
-				processoResponseDTOs.add(new ProcessoResponseDTO(processo));
+			for (final Processo processo : this.processoRepository.findAllPendentesUsuarioFinalizador(codigoUsuarioAutenticado)) {
+				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
+						processo.getCodigo(), codigoUsuarioAutenticado) &&
+						this.processoRepository.existsProcessoUsuario(processo.getCodigo(), codigoUsuarioAutenticado);
+				processoResponseDTOs.add(new ProcessoResponseDTO(processo, parecerPendente));
 			}
 		} else {
 			for (final Processo processo : this.processoRepository.findAll()) {
-				processoResponseDTOs.add(new ProcessoResponseDTO(processo));
+				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
+						processo.getCodigo(), codigoUsuarioAutenticado) &&
+						this.processoRepository.existsProcessoUsuario(processo.getCodigo(), codigoUsuarioAutenticado);
+				processoResponseDTOs.add(new ProcessoResponseDTO(processo, parecerPendente));
 			}
 		}
 		return ResponseEntity.ok(processoResponseDTOs);
@@ -69,14 +78,17 @@ public class ProcessoController {
 	public ResponseEntity<ProcessoResponseDTO> getProcesso(@PathVariable final Long codigo) {
 		Optional<Processo> processoOptional;
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
-			processoOptional = this.processoRepository.findPendenteUsuarioFinalizador(
-					((JwtUserDetails) authentication.getPrincipal()).getId(), codigo);
+			processoOptional = this.processoRepository.findPendenteUsuarioFinalizador(codigoUsuarioAutenticado, codigo);
 		} else {
 			processoOptional = this.processoRepository.findById(codigo);
 		}
 		if (processoOptional.isPresent()) {
-			return ResponseEntity.ok(new ProcessoResponseDTO(processoOptional.get()));
+			final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
+					processoOptional.get().getCodigo(), codigoUsuarioAutenticado) &&
+					this.processoRepository.existsProcessoUsuario(processoOptional.get().getCodigo(), codigoUsuarioAutenticado);
+			return ResponseEntity.ok(new ProcessoResponseDTO(processoOptional.get(), parecerPendente));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -149,8 +161,13 @@ public class ProcessoController {
 		}
 
 		processoOptional.get().getUsuarios().add(usuarioOptional.get());
-		this.processoRepository.save(processoOptional.get());
 
+		if (StatusProcesso.NOVO.equals(processoOptional.get().getStatus()) ||
+				StatusProcesso.FINALIZADO.equals(processoOptional.get().getStatus())) {
+			processoOptional.get().setStatus(StatusProcesso.AGUARDANDO_PARECER);
+		}
+
+		this.processoRepository.save(processoOptional.get());
 		return ResponseEntity.noContent().build();
 	}
 
@@ -184,6 +201,26 @@ public class ProcessoController {
 			processoUsuarioResponseDTOs.add(new ProcessoUsuarioResponseDTO(processoOptional.get(), usuario));
 		}
 		return ResponseEntity.ok(processoUsuarioResponseDTOs);
+	}
+
+	@GetMapping("/get/responsaveis")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
+	public ResponseEntity<List<ResponsavelResponseDTO>> getResponsaveis() {
+		final List<ResponsavelResponseDTO> responsavelResponseDTOs = new ArrayList<>();
+		for (final Usuario usuario : this.usuarioRepository.getResponsaveis()) {
+			responsavelResponseDTOs.add(new ResponsavelResponseDTO(usuario));
+		}
+		return ResponseEntity.ok(responsavelResponseDTOs);
+	}
+
+	@GetMapping("/{codigoProcesso}/get/finalizadores")
+	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
+	public ResponseEntity<List<ResponsavelResponseDTO>> getFinalizadores(@PathVariable("codigoProcesso") final long codigoProcesso) {
+		final List<ResponsavelResponseDTO> responsavelResponseDTOs = new ArrayList<>();
+		for (final Usuario usuario : this.usuarioRepository.getFinalizadores(codigoProcesso)) {
+			responsavelResponseDTOs.add(new ResponsavelResponseDTO(usuario));
+		}
+		return ResponseEntity.ok(responsavelResponseDTOs);
 	}
 
 	private MensagemResponseDTO verificarExistenciaProcessoUsuario(final Optional<Processo> processoOptional,
