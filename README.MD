@@ -119,3 +119,18 @@ Em caso de dúvidas, envie um email para [g_cpa_squad_produto@softplan.com.br](m
 
 
 **Até breve**
+
+---
+
+### Screenshots
+
+![Login](/screenshots/Login.png?raw=true "Login")
+![Home](/screenshots/Home.png?raw=true "Home")
+![Usuários](/screenshots/Usuarios.png?raw=true "Usuários")
+![Usuários Form](/screenshots/UsuariosForm.png?raw=true "Usuários Form")
+![Processos](/screenshots/Processos.png?raw=true "Processos")
+![ProcessosForm](/screenshots/ProcessosForm.png?raw=true "Processos Form")
+![Atribuições](/screenshots/Atribuicoes.png?raw=true "Atribuições")
+![Atribuições Form](/screenshots/AtribuicoesForm.png?raw=true "Atribuições Form")
+![Pareceres](/screenshots/Pareceres.png?raw=true "Pareceres")
+![Pareceres Form](/screenshots/PareceresForm.png?raw=true "Pareceres Form")
