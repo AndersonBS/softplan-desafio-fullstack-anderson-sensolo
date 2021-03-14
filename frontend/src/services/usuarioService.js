@@ -4,8 +4,8 @@ import jwtHeader from './jwtService';
 const SERVICE_URL = `http://localhost:8080/usuario`;
 
 class UsuarioService {
-    getUsuarios() {
-        return axios.get(`${SERVICE_URL}/get`, { headers: jwtHeader() });
+    getUsuarios(selectedPage, pageSize) {
+        return axios.get(`${SERVICE_URL}/get?selectedPage=${selectedPage}&pageSize=${pageSize}`, { headers: jwtHeader() });
     }
 
     getUsuario(codigoUsuario) {

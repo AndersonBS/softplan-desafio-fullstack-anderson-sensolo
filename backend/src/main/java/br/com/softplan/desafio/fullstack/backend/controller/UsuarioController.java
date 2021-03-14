@@ -1,11 +1,12 @@
 package br.com.softplan.desafio.fullstack.backend.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.softplan.desafio.fullstack.backend.dto.request.UsuarioRequestDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
+import br.com.softplan.desafio.fullstack.backend.dto.response.PageableUsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.UsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.model.PermissaoUsuario;
 import br.com.softplan.desafio.fullstack.backend.model.Usuario;
@@ -40,17 +43,15 @@ public class UsuarioController {
 	@Autowired PasswordEncoder passwordEncoder;
 
 	/**
-	 * Lista os usuários
+	 * Lista os usuários com paginação
 	 * @return
 	 */
 	@GetMapping("/get")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
-	public ResponseEntity<List<UsuarioResponseDTO>> getUsuarios() {
-		final List<UsuarioResponseDTO> usuarioResponseDTOs = new ArrayList<>();
-		for (final Usuario usuario : this.usuarioRepository.findAll()) {
-			usuarioResponseDTOs.add(new UsuarioResponseDTO(usuario));
-		}
-		return ResponseEntity.ok(usuarioResponseDTOs);
+	public ResponseEntity<PageableUsuarioResponseDTO> getUsuarios(
+			@RequestParam(defaultValue = "0") final int selectedPage, @RequestParam(defaultValue = "5") final int pageSize) {
+		return ResponseEntity.ok(new PageableUsuarioResponseDTO(this.usuarioRepository.findAll(
+				PageRequest.of(selectedPage, pageSize, Sort.by(new Order(Sort.Direction.ASC, "codigo"))))));
 	}
 
 	/**

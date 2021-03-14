@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import FooterComponent from "../FooterComponent";
 import HeaderComponent from "../HeaderComponent";
 import UsuarioService from "../../services/usuarioService";
@@ -17,7 +18,9 @@ class ListUsuarioComponent extends Component {
         this.state = {
             usuarios: [],
             message: null,
-            messageType: null
+            messageType: null,
+            pageSize: 7,
+            pageCount: 1
         };
 
         this.getUsuarios = this.getUsuarios.bind(this);
@@ -28,13 +31,13 @@ class ListUsuarioComponent extends Component {
     }
 
     componentDidMount() {
-        this.getUsuarios();
+        this.getUsuarios(0);
     }
 
-    getUsuarios() {
-        UsuarioService.getUsuarios()
+    getUsuarios(selectedPage) {
+        UsuarioService.getUsuarios(selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ usuarios: response.data });
+                this.setState({ usuarios: response.data.usuarios, pageCount: response.data.totalPages });
             })
             .catch(this.setState({ usuarios: [] }));
     }
@@ -63,6 +66,14 @@ class ListUsuarioComponent extends Component {
     goBackClicked() {
         this.props.history.push('/home');
     }
+
+    handlePageClick(page) {
+        this.getUsuarios(page.selected);
+    }; 
+
+    handlePageClick = (page) => {
+        this.getUsuarios(page.selected);
+    };
 
     render() {
         return (
@@ -103,6 +114,24 @@ class ListUsuarioComponent extends Component {
                             </tbody>
                         </table>
                     </div>
+                    <ReactPaginate
+                        previousLabel={"Anterior"}
+                        nextLabel={"Próxima"}
+                        breakLabel={"..."}
+                        pageCount={this.state.pageCount}
+                        pageRangeDisplayed={5}
+                        marginPagesDisplayed={2}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={"pagination justify-content-center"}
+                        breakClassName="page-item"
+                        breakLabel={<a className="page-link">...</a>}
+                        pageClassName="page-item"
+                        previousClassName="page-item"
+                        nextClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousLinkClassName="page-link"
+                        nextLinkClassName="page-link"
+                        activeClassName={"active"} />
                     <div className="row justify-content-center">
                         <button className="btn btn-primary mx-2" type="submit" onClick={this.goBackClicked}>Voltar</button>
                         <button className="btn btn-success mx-2" onClick={this.addUsuarioClicked}>Adicionar</button>
