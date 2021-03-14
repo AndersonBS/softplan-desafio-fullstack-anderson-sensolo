@@ -4,8 +4,8 @@ import jwtHeader from './jwtService';
 const SERVICE_URL = "http://localhost:8080/parecer";
 
 class ParecerService {
-    getPareceres() {
-        return axios.get(`${SERVICE_URL}/get`, { headers: jwtHeader() });
+    getPareceres(selectedPage, pageSize) {
+        return axios.get(`${SERVICE_URL}/get?selectedPage=${selectedPage}&pageSize=${pageSize}`, { headers: jwtHeader() });
     }
 
     getParecer(codigoParecer) {

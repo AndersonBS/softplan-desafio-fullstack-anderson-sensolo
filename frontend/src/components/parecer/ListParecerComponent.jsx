@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import FooterComponent from "../FooterComponent";
 import HeaderComponent from "../HeaderComponent";
 import ParecerService from "../../services/parecerService";
@@ -18,7 +19,12 @@ class ListParecerComponent extends Component {
             pareceres: [],
             message: null,
             messageType: null,
-            permissao: user.permissao
+            permissao: user.permissao,
+            pageSize: 7,
+            pageCount: 1,
+            selectedPage : 1,
+            pageRangeDisplayed: 5,
+            marginPagesDisplayed: 2
         };
 
         this.getPareceres = this.getPareceres.bind(this);
@@ -28,13 +34,17 @@ class ListParecerComponent extends Component {
     }
 
     componentDidMount() {
-        this.getPareceres();
+        this.getPareceres(0);
     }
 
-    getPareceres() {
-        ParecerService.getPareceres()
+    getPareceres(selectedPage) {
+        ParecerService.getPareceres(selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ pareceres: response.data });
+                this.setState({ 
+                    pareceres: response.data.pareceres,
+                    pageCount: response.data.totalPages,
+                    selectedPage: response.data.selectedPage  
+                });
             })
             .catch(this.setState({ pareceres: [] }));
     }
@@ -59,6 +69,10 @@ class ListParecerComponent extends Component {
     goBackClicked() {
         this.props.history.push('/home');
     }
+
+    handlePageClick = (page) => {
+        this.getPareceres(page.selected);
+    };
 
     render() {
         return (
@@ -105,6 +119,27 @@ class ListParecerComponent extends Component {
                             </tbody>
                         </table>
                     </div>
+                    {this.state.pareceres && this.state.pareceres.length > 0 &&
+                    <ReactPaginate
+                        previousLabel={"Anterior"}
+                        nextLabel={"Próxima"}
+                        breakLabel={"..."}
+                        pageCount={this.state.pageCount}
+                        pageRangeDisplayed={this.state.pageRangeDisplayed}
+                        marginPagesDisplayed={this.state.marginPagesDisplayed}
+                        forcePage={this.state.selectedPage}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={"pagination justify-content-center"}
+                        breakClassName="page-item"
+                        breakLabel={<a className="page-link">...</a>}
+                        pageClassName="page-item"
+                        previousClassName="page-item"
+                        nextClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousLinkClassName="page-link"
+                        nextLinkClassName="page-link"
+                        activeClassName={"active"} />
+                    }
                     <div className="row justify-content-center">
                         <button className="btn btn-primary mx-2" type="submit" onClick={this.goBackClicked}>Voltar</button>
                     </div>

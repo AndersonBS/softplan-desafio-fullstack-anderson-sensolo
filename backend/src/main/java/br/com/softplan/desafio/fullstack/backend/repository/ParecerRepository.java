@@ -1,7 +1,8 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import br.com.softplan.desafio.fullstack.backend.model.Parecer;
@@ -34,7 +35,7 @@ public interface ParecerRepository extends JpaRepository<Parecer, Long> {
 	 * @return
 	 */
 	@Query(" select par from Parecer par inner join par.autor aut where aut.codigo = :codigoAutor ")
-	List<Parecer> findAllByAutor(final Long codigoAutor);
+	Page<Parecer> findAllByAutor(final Long codigoAutor, final Pageable pageable);
 
 	/**
 	 * Busca um parecer pelo código e autor
