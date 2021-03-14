@@ -53,7 +53,7 @@ class ListProcessoUsuarioComponent extends Component {
     removeProcessoUsuarioClicked(codigoUsuario) {
         ProcessoService.removeProcessoUsuario(this.state.codigoProcesso, codigoUsuario)
             .then(() => {
-                this.getProcessoUsuarios();
+                this.getProcessoUsuarios(0);
                 this.setState({ message: `Atribuição do usuário ${codigoUsuario} ao processo ${this.state.codigoProcesso} removida com sucesso!` });
                 this.setState({ messageType: 'success' });
             })

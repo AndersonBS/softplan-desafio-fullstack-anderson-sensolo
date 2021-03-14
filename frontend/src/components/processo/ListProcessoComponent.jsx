@@ -55,7 +55,7 @@ class ListProcessoComponent extends Component {
     deleteProcessoClicked(codigoProcesso) {
         ProcessoService.deleteProcesso(codigoProcesso)
             .then(() => {
-                this.getProcessos();
+                this.getProcessos(0);
                 this.setState({ message: `Processo ${codigoProcesso} excluído com sucesso!` });
                 this.setState({ messageType: 'success' });
             })

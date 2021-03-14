@@ -52,7 +52,7 @@ class ListParecerComponent extends Component {
     deleteParecerClicked(codigoParecer) {
         ParecerService.deleteParecer(codigoParecer)
             .then(() => {
-                this.getPareceres();
+                this.getPareceres(0);
                 this.setState({ message: `Parecer ${codigoParecer} excluído com sucesso!` });
                 this.setState({ messageType: 'success' });
             })

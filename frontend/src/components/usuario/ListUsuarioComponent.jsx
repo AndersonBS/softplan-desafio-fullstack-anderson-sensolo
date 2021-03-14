@@ -52,7 +52,7 @@ class ListUsuarioComponent extends Component {
     deleteUsuarioClicked(codigoUsuario) {
         UsuarioService.deleteUsuario(codigoUsuario)
             .then(() => {
-                this.getUsuarios();
+                this.getUsuarios(0);
                 this.setState({ message: `Usuário ${codigoUsuario} excluído com sucesso!` });
                 this.setState({ messageType: 'success' });
             })
@@ -73,10 +73,6 @@ class ListUsuarioComponent extends Component {
     goBackClicked() {
         this.props.history.push('/home');
     }
-
-    handlePageClick(page) {
-        this.getUsuarios(page.selected);
-    }; 
 
     handlePageClick = (page) => {
         this.getUsuarios(page.selected);
