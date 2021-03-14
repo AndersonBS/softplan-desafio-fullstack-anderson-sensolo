@@ -22,7 +22,10 @@ class ListProcessoComponent extends Component {
             permissao: user.permissao,
             codigoAutor: user.codigo,
             pageSize: 7,
-            pageCount: 1
+            pageCount: 1,
+            selectedPage : 1,
+            pageRangeDisplayed: 5,
+            marginPagesDisplayed: 2
         };
 
         this.getProcessos = this.getProcessos.bind(this);
@@ -40,7 +43,11 @@ class ListProcessoComponent extends Component {
     getProcessos(selectedPage) {
         ProcessoService.getProcessos(selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ processos: response.data.processos, pageCount: response.data.totalPages });
+                this.setState({ 
+                    processos: response.data.processos, 
+                    pageCount: response.data.totalPages, 
+                    selectedPage: response.data.selectedPage 
+                });
             })
             .catch(this.setState({ processos: [] }));
     }
@@ -139,8 +146,9 @@ class ListProcessoComponent extends Component {
                         nextLabel={"Próxima"}
                         breakLabel={"..."}
                         pageCount={this.state.pageCount}
-                        pageRangeDisplayed={5}
-                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={this.state.pageRangeDisplayed}
+                        marginPagesDisplayed={this.state.marginPagesDisplayed}
+                        forcePage={this.state.selectedPage}
                         onPageChange={this.handlePageClick}
                         containerClassName={"pagination justify-content-center"}
                         breakClassName="page-item"

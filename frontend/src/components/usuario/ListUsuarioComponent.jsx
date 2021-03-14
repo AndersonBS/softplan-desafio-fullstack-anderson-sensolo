@@ -20,7 +20,10 @@ class ListUsuarioComponent extends Component {
             message: null,
             messageType: null,
             pageSize: 7,
-            pageCount: 1
+            pageCount: 1,
+            selectedPage : 1,
+            pageRangeDisplayed: 5,
+            marginPagesDisplayed: 2
         };
 
         this.getUsuarios = this.getUsuarios.bind(this);
@@ -37,7 +40,11 @@ class ListUsuarioComponent extends Component {
     getUsuarios(selectedPage) {
         UsuarioService.getUsuarios(selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ usuarios: response.data.usuarios, pageCount: response.data.totalPages });
+                this.setState({ 
+                    usuarios: response.data.usuarios, 
+                    pageCount: response.data.totalPages,
+                    selectedPage: response.data.selectedPage 
+                });
             })
             .catch(this.setState({ usuarios: [] }));
     }
@@ -120,8 +127,9 @@ class ListUsuarioComponent extends Component {
                         nextLabel={"Próxima"}
                         breakLabel={"..."}
                         pageCount={this.state.pageCount}
-                        pageRangeDisplayed={5}
-                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={this.state.pageRangeDisplayed}
+                        marginPagesDisplayed={this.state.marginPagesDisplayed}
+                        forcePage={this.state.selectedPage}
                         onPageChange={this.handlePageClick}
                         containerClassName={"pagination justify-content-center"}
                         breakClassName="page-item"
