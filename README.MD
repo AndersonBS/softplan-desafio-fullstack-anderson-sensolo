@@ -12,12 +12,14 @@
 - Modelos sem boilerplate com Lombok
 - Validação dos requests com Java Bean Validation
 - Simulação de requisições com Postman
+- Paginação com Pageable
 
 **Frontend**
 - Projeto React
 - Formulários com Formik
 - Cliente HTTP com Axios
 - Aparência e responsividade com Bootstrap
+- Paginação com ReactPaginate
 
 ### Suposições do desafio
 - Registros podem ser editados e removidos
@@ -52,7 +54,7 @@ Instruções:
 Observação: Infelizmente não tive tempo de disponibilizar com docker.
 
 ### Melhorias a serem feitas
-- Adicionar busca e paginação nas listas de registros
+- Adicionar busca nas listas de registros
 - Adicionar página para visualização de auditorias para o usuário Administrador
 - Adicionar controle de logs
 
