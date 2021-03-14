@@ -1,7 +1,8 @@
 package br.com.softplan.desafio.fullstack.backend.repository;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,7 +28,7 @@ public interface ProcessoRepository extends JpaRepository<Processo, Long> {
 			"    and not exists (select par from Parecer par " +
 			"        where par.processo.codigo = pro.codigo " +
 			"            and par.autor.codigo = :codigoUsuarioFinalizador) ")
-	List<Processo> findAllPendentesUsuarioFinalizador(final Long codigoUsuarioFinalizador);
+	Page<Processo> findAllPendentesUsuarioFinalizador(final Long codigoUsuarioFinalizador, final Pageable pageable);
 
 	/**
 	 * Busca um processo pendente de parecer pelo código e autor (somente usuário finalizador)

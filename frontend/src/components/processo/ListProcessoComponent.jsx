@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import FooterComponent from "../FooterComponent";
 import HeaderComponent from "../HeaderComponent";
 import ProcessoService from "../../services/processoService";
@@ -19,7 +20,9 @@ class ListProcessoComponent extends Component {
             message: null,
             messageType: null,
             permissao: user.permissao,
-            codigoAutor: user.codigo
+            codigoAutor: user.codigo,
+            pageSize: 7,
+            pageCount: 1
         };
 
         this.getProcessos = this.getProcessos.bind(this);
@@ -31,13 +34,13 @@ class ListProcessoComponent extends Component {
     }
 
     componentDidMount() {
-        this.getProcessos();
+        this.getProcessos(0);
     }
 
-    getProcessos() {
-        ProcessoService.getProcessos()
+    getProcessos(selectedPage) {
+        ProcessoService.getProcessos(selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ processos: response.data });
+                this.setState({ processos: response.data.processos, pageCount: response.data.totalPages });
             })
             .catch(this.setState({ processos: [] }));
     }
@@ -74,6 +77,10 @@ class ListProcessoComponent extends Component {
     parecerClicked(codigoProcesso) {
         this.props.history.push(`/parecer/-1/processo/${codigoProcesso}/autor/${this.state.codigoAutor}`);
     }
+
+    handlePageClick = (page) => {
+        this.getProcessos(page.selected);
+    };
 
     render() {
         return (
@@ -126,6 +133,26 @@ class ListProcessoComponent extends Component {
                             </tbody>
                         </table>
                     </div>
+                    {this.state.processos && this.state.processos.length > 0 && 
+                    <ReactPaginate
+                        previousLabel={"Anterior"}
+                        nextLabel={"Próxima"}
+                        breakLabel={"..."}
+                        pageCount={this.state.pageCount}
+                        pageRangeDisplayed={5}
+                        marginPagesDisplayed={2}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={"pagination justify-content-center"}
+                        breakClassName="page-item"
+                        breakLabel={<a className="page-link">...</a>}
+                        pageClassName="page-item"
+                        previousClassName="page-item"
+                        nextClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousLinkClassName="page-link"
+                        nextLinkClassName="page-link"
+                        activeClassName={"active"} /> 
+                    }
                     <div className="row justify-content-center">
                         <button className="btn btn-primary mx-2" type="submit" onClick={this.goBackClicked}>Voltar</button>
                         {(this.state.permissao === 'Administrador' || this.state.permissao === 'Triador') &&

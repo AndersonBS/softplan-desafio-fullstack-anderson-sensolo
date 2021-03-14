@@ -51,7 +51,7 @@ public class UsuarioController {
 	public ResponseEntity<PageableUsuarioResponseDTO> getUsuarios(
 			@RequestParam(defaultValue = "0") final int selectedPage, @RequestParam(defaultValue = "5") final int pageSize) {
 		return ResponseEntity.ok(new PageableUsuarioResponseDTO(this.usuarioRepository.findAll(
-				PageRequest.of(selectedPage, pageSize, Sort.by(new Order(Sort.Direction.ASC, "codigo"))))));
+				PageRequest.of(selectedPage, pageSize, Sort.by(new Order(Sort.Direction.DESC, "codigo"))))));
 	}
 
 	/**

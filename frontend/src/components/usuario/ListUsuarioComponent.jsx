@@ -114,6 +114,7 @@ class ListUsuarioComponent extends Component {
                             </tbody>
                         </table>
                     </div>
+                    {this.state.usuarios && this.state.usuarios.length > 0 &&
                     <ReactPaginate
                         previousLabel={"Anterior"}
                         nextLabel={"Próxima"}
@@ -132,6 +133,7 @@ class ListUsuarioComponent extends Component {
                         previousLinkClassName="page-link"
                         nextLinkClassName="page-link"
                         activeClassName={"active"} />
+                    }
                     <div className="row justify-content-center">
                         <button className="btn btn-primary mx-2" type="submit" onClick={this.goBackClicked}>Voltar</button>
                         <button className="btn btn-success mx-2" onClick={this.addUsuarioClicked}>Adicionar</button>

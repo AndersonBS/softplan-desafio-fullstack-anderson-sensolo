@@ -4,8 +4,8 @@ import jwtHeader from './jwtService';
 const SERVICE_URL = `http://localhost:8080/processo`;
 
 class ProcessoService {
-    getProcessos() {
-        return axios.get(`${SERVICE_URL}/get`, { headers: jwtHeader() });
+    getProcessos(selectedPage, pageSize) {
+        return axios.get(`${SERVICE_URL}/get?selectedPage=${selectedPage}&pageSize=${pageSize}`, { headers: jwtHeader() });
     }
 
     getProcesso(codigoProcesso) {

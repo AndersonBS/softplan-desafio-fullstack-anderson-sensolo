@@ -1,5 +1,6 @@
 package br.com.softplan.desafio.fullstack.backend.dto.response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PageableUsuarioResponseDTO {
+public class PageableUsuarioResponseDTO implements Serializable {
 
-	final List<UsuarioResponseDTO> usuarios = new ArrayList<>();
+	private static final long serialVersionUID = 2480212332263251931L;
+
+	private final List<UsuarioResponseDTO> usuarios = new ArrayList<>();
 	private Integer selectedPage;
 	private Long totalElements;
 	private Integer totalPages;

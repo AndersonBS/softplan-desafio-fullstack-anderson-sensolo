@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,9 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.softplan.desafio.fullstack.backend.dto.request.ProcessoRequestDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
+import br.com.softplan.desafio.fullstack.backend.dto.response.PageableProcessoResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoUsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ResponsavelResponseDTO;
@@ -55,14 +62,18 @@ public class ProcessoController {
 	 */
 	@GetMapping("/get")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR') or hasAuthority('FINALIZADOR')")
-	public ResponseEntity<List<ProcessoResponseDTO>> getProcessos() {
+	public ResponseEntity<PageableProcessoResponseDTO> getProcessos(
+			@RequestParam(defaultValue = "0") final int selectedPage, @RequestParam(defaultValue = "5") final int pageSize) {
 		final List<ProcessoResponseDTO> processoResponseDTOs = new ArrayList<>();
+		final Page<Processo> processoPage;
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final Long codigoUsuarioAutenticado = ((JwtUserDetails) authentication.getPrincipal()).getId();
+		final Pageable pageable = PageRequest.of(selectedPage, pageSize, Sort.by(new Order(Sort.Direction.DESC, "codigo")));
 
 		// Listar processos com filtro por usuário caso seja finalizador
 		if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(PermissaoUsuario.FINALIZADOR.name()))) {
-			for (final Processo processo : this.processoRepository.findAllPendentesUsuarioFinalizador(codigoUsuarioAutenticado)) {
+			processoPage = this.processoRepository.findAllPendentesUsuarioFinalizador(codigoUsuarioAutenticado, pageable);
+			for (final Processo processo : processoPage.getContent()) {
 				// Verifica se o usuário logado deve incluir parecer no processo
 				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
 						processo.getCodigo(), codigoUsuarioAutenticado) &&
@@ -71,7 +82,8 @@ public class ProcessoController {
 			}
 		} else {
 			// Caso seja administrador ou triador pode listar todos os processos
-			for (final Processo processo : this.processoRepository.findAll()) {
+			processoPage = this.processoRepository.findAll(PageRequest.of(selectedPage, pageSize, Sort.by(new Order(Sort.Direction.ASC, "codigo"))));
+			for (final Processo processo : this.processoRepository.findAll(pageable)) {
 				// Verifica se o usuário logado deve incluir parecer no processo
 				final boolean parecerPendente = !this.parecerRepository.existsByProcessoAndAutor(
 						processo.getCodigo(), codigoUsuarioAutenticado) &&
@@ -79,7 +91,7 @@ public class ProcessoController {
 				processoResponseDTOs.add(new ProcessoResponseDTO(processo, parecerPendente));
 			}
 		}
-		return ResponseEntity.ok(processoResponseDTOs);
+		return ResponseEntity.ok(new PageableProcessoResponseDTO(processoResponseDTOs, processoPage));
 	}
 
 	/**
