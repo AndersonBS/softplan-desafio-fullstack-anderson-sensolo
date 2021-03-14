@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import FooterComponent from "../FooterComponent";
 import HeaderComponent from "../HeaderComponent";
 import ProcessoService from "../../services/processoService";
@@ -19,7 +20,12 @@ class ListProcessoUsuarioComponent extends Component {
             processoUsuarios: [],
             message: null,
             messageType: null,
-            permissao: user.permissao
+            permissao: user.permissao,
+            pageSize: 7,
+            pageCount: 1,
+            selectedPage : 1,
+            pageRangeDisplayed: 5,
+            marginPagesDisplayed: 2
         };
 
         this.getProcessoUsuarios = this.getProcessoUsuarios.bind(this);
@@ -29,13 +35,17 @@ class ListProcessoUsuarioComponent extends Component {
     }
 
     componentDidMount() {
-        this.getProcessoUsuarios();
+        this.getProcessoUsuarios(0);
     }
 
-    getProcessoUsuarios() {
-        ProcessoService.getProcessoUsuarios(this.state.codigoProcesso)
+    getProcessoUsuarios(selectedPage) {
+        ProcessoService.getProcessoUsuarios(this.state.codigoProcesso, selectedPage, this.state.pageSize)
             .then(response => {
-                this.setState({ processoUsuarios: response.data });
+                this.setState({ 
+                    processoUsuarios: response.data.processoUsuarios,
+                    pageCount: response.data.totalPages,
+                    selectedPage: response.data.selectedPage 
+                });
             })
             .catch(this.setState({ processoUsuarios: [] }));
     }
@@ -60,6 +70,10 @@ class ListProcessoUsuarioComponent extends Component {
     goBackClicked() {
         this.props.history.push('/processos');
     }
+
+    handlePageClick = (page) => {
+        this.getProcessoUsuarios(page.selected);
+    };
 
     render() {
         return (
@@ -101,6 +115,27 @@ class ListProcessoUsuarioComponent extends Component {
                             </tbody>
                         </table>
                     </div>
+                    {this.state.processoUsuarios && this.state.processoUsuarios.length > 0 &&
+                    <ReactPaginate
+                        previousLabel={"Anterior"}
+                        nextLabel={"Próxima"}
+                        breakLabel={"..."}
+                        pageCount={this.state.pageCount}
+                        pageRangeDisplayed={this.state.pageRangeDisplayed}
+                        marginPagesDisplayed={this.state.marginPagesDisplayed}
+                        forcePage={this.state.selectedPage}
+                        onPageChange={this.handlePageClick}
+                        containerClassName={"pagination justify-content-center"}
+                        breakClassName="page-item"
+                        breakLabel={<a className="page-link">...</a>}
+                        pageClassName="page-item"
+                        previousClassName="page-item"
+                        nextClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousLinkClassName="page-link"
+                        nextLinkClassName="page-link"
+                        activeClassName={"active"} />
+                    }
                     <div className="row justify-content-center">
                         <button className="btn btn-primary mx-2" type="submit" onClick={this.goBackClicked}>Voltar</button>
                         {(this.state.permissao === 'Administrador' || this.state.permissao === 'Triador') &&

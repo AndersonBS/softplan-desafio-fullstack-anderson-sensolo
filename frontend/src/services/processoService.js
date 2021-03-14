@@ -32,8 +32,8 @@ class ProcessoService {
         return axios.put(`${SERVICE_URL}/${codigoProcesso}/remove/usuario/${codigoUsuario}`, null, { headers: jwtHeader() });
     }
 
-    getProcessoUsuarios(codigoProcesso) {
-        return axios.get(`${SERVICE_URL}/${codigoProcesso}/get/usuarios`, { headers: jwtHeader() });
+    getProcessoUsuarios(codigoProcesso, selectedPage, pageSize) {
+        return axios.get(`${SERVICE_URL}/${codigoProcesso}/get/usuarios?selectedPage=${selectedPage}&pageSize=${pageSize}`, { headers: jwtHeader() });
     }
 
     getResponsaveis() {

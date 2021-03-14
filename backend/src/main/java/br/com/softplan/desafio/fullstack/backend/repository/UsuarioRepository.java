@@ -2,6 +2,8 @@ package br.com.softplan.desafio.fullstack.backend.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -59,5 +61,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 			"and not exists (select 1 from Processo pro inner join pro.usuarios pu " +
 			"where pro.codigo = :codigoProcesso and pu.codigo = usu.codigo) ")
 	List<Usuario> getFinalizadores(final Long codigoProcesso);
+
+	/**
+	 * Busca a lista de usuários vinculados ao processo com paginação
+	 * @param codigoProcesso
+	 * @param pageable
+	 * @return
+	 */
+	@Query(" select usu from Processo pro inner join pro.usuarios usu where pro.codigo = :codigoProcesso ")
+	Page<Usuario> findByProcesso(final Long codigoProcesso, final Pageable pageable);
 
 }

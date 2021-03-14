@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.softplan.desafio.fullstack.backend.dto.request.ProcessoRequestDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.PageableProcessoResponseDTO;
+import br.com.softplan.desafio.fullstack.backend.dto.response.PageableProcessoUsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ProcessoUsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.ResponsavelResponseDTO;
@@ -271,18 +272,21 @@ public class ProcessoController {
 	 */
 	@GetMapping("/{codigoProcesso}/get/usuarios")
 	@PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('TRIADOR')")
-	public ResponseEntity<List<ProcessoUsuarioResponseDTO>> getProcessoUsuarios(@PathVariable("codigoProcesso") final long codigoProcesso) {
+	public ResponseEntity<PageableProcessoUsuarioResponseDTO> getProcessoUsuarios(@PathVariable("codigoProcesso") final long codigoProcesso,
+			@RequestParam(defaultValue = "0") final int selectedPage, @RequestParam(defaultValue = "5") final int pageSize) {
 		// Verificação e tratamento caso o processo não tenha sido encontrado
 		final Optional<Processo> processoOptional = this.processoRepository.findById(codigoProcesso);
 		if (!processoOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
 
+		final Pageable pageable = PageRequest.of(selectedPage, pageSize);
+		final Page<Usuario> usuarioPage = this.usuarioRepository.findByProcesso(codigoProcesso, pageable);
 		final List<ProcessoUsuarioResponseDTO> processoUsuarioResponseDTOs = new ArrayList<>();
-		for (final Usuario usuario : processoOptional.get().getUsuarios()) {
+		for (final Usuario usuario : usuarioPage.getContent()) {
 			processoUsuarioResponseDTOs.add(new ProcessoUsuarioResponseDTO(processoOptional.get(), usuario));
 		}
-		return ResponseEntity.ok(processoUsuarioResponseDTOs);
+		return ResponseEntity.ok(new PageableProcessoUsuarioResponseDTO(processoUsuarioResponseDTOs, usuarioPage));
 	}
 
 	/**
