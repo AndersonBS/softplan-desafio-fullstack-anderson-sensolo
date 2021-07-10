@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwtHeader from './jwtService';
 
-const SERVICE_URL = `http://localhost:8080/processo`;
+const SERVICE_URL = `http://localhost:8080/api/processo`;
 
 class ProcessoService {
     getProcessos(selectedPage, pageSize) {

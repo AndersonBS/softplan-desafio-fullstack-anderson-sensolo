@@ -16,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,9 +47,8 @@ import br.com.softplan.desafio.fullstack.backend.security.model.JwtUserDetails;
  * @since 07/11/2020
  */
 
-@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/processo")
+@RequestMapping("/api/processo")
 public class ProcessoController {
 
 	@Autowired ProcessoRepository processoRepository;

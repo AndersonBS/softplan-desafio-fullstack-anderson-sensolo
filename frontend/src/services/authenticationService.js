@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const SERVICE_URL = 'http://localhost:8080/authenticate';
+const SERVICE_URL = 'http://localhost:8080/api/authenticate';
 
 class AuthenticationService {
     async login(username, password) {

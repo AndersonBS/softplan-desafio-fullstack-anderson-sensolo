@@ -42,16 +42,11 @@ Observação: Aprendi React essa semana para fazer o desafio, pois diariamente t
 
 ### Rodando a aplicação
 Requisitos:
-- Servidor MySql com usuário root e senha root rodando local na porta 3306 (ou alterar no application.properties do backend)
-- Spring Tool Suite 4 (STS)
-- Node Package Manager (NPM)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
 Instruções:
-- Certifique-se de que o servidor MySQL está rodando e respondendo
-- Importe o projeto backend no STS como uma aplicação maven e inicie pelo Boot Dashboard
-- Inicie o projeto frontend através do comando npm start
-
-Observação: Infelizmente não tive tempo de disponibilizar com docker.
+- Execute o comando "docker-compose up" na raiz do projeto
+- Acesse o link http://localhost/login em seu navegador
 
 ### Melhorias a serem feitas
 - Adicionar busca nas listas de registros

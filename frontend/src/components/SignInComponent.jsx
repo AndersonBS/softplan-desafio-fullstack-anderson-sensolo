@@ -75,8 +75,8 @@ class SignInComponent extends Component {
         return (
             <div className="container">
                 <div className="singin-container">
-                    <div class="card-effect">
-                        <div class="card">
+                    <div className="card-effect">
+                        <div className="card">
                             {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
                             <form className="form-signin" onSubmit={this.handleSignIn}>
                                 <h1 className="form-signin-heading text-muted title">Softplan</h1>

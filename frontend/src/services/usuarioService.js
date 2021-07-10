@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwtHeader from './jwtService';
 
-const SERVICE_URL = `http://localhost:8080/usuario`;
+const SERVICE_URL = `http://localhost:8080/api/usuario`;
 
 class UsuarioService {
     getUsuarios(selectedPage, pageSize) {

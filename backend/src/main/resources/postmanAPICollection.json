@@ -11,7 +11,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "201889a7-8df1-47c6-b6fa-858de36e4e5e",
 						"exec": [
 							"const response = pm.response.json();\r",
 							"\r",
@@ -34,13 +33,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/authenticate",
+					"raw": "http://localhost:8080/api/authenticate",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"authenticate"
 					]
 				}
@@ -75,13 +75,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/get",
+					"raw": "http://localhost:8080/api/usuario/get",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"usuario",
 						"get"
 					]
@@ -117,13 +118,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/get/1",
+					"raw": "http://localhost:8080/api/usuario/get/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"usuario",
 						"get",
 						"1"
@@ -157,13 +159,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/delete/3",
+					"raw": "http://localhost:8080/api/usuario/delete/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"usuario",
 						"delete",
 						"3"
@@ -197,13 +200,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/create",
+					"raw": "http://localhost:8080/api/usuario/create",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"usuario",
 						"create"
 					]
@@ -236,13 +240,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/usuario/update/4",
+					"raw": "http://localhost:8080/api/usuario/update/4",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"usuario",
 						"update",
 						"4"
@@ -279,13 +284,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/get",
+					"raw": "http://localhost:8080/api/processo/get",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"get"
 					]
@@ -321,13 +327,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/get/1",
+					"raw": "http://localhost:8080/api/processo/get/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"get",
 						"1"
@@ -361,13 +368,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/delete/2",
+					"raw": "http://localhost:8080/api/processo/delete/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"delete",
 						"2"
@@ -401,13 +409,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/create",
+					"raw": "http://localhost:8080/api/processo/create",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"create"
 					]
@@ -440,13 +449,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/update/2",
+					"raw": "http://localhost:8080/api/processo/update/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"update",
 						"2"
@@ -483,13 +493,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/3/get/usuarios",
+					"raw": "http://localhost:8080/api/processo/3/get/usuarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"3",
 						"get",
@@ -524,13 +535,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/3/add/usuario/3",
+					"raw": "http://localhost:8080/api/processo/3/add/usuario/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"3",
 						"add",
@@ -566,13 +578,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/3/remove/usuario/3",
+					"raw": "http://localhost:8080/api/processo/3/remove/usuario/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"3",
 						"remove",
@@ -611,13 +624,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/get/responsaveis",
+					"raw": "http://localhost:8080/api/processo/get/responsaveis",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"get",
 						"responsaveis"
@@ -654,13 +668,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/processo/4/get/finalizadores",
+					"raw": "http://localhost:8080/api/processo/4/get/finalizadores",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"processo",
 						"4",
 						"get",
@@ -698,13 +713,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/parecer/get",
+					"raw": "http://localhost:8080/api/parecer/get",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"parecer",
 						"get"
 					]
@@ -740,13 +756,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/parecer/get/1",
+					"raw": "http://localhost:8080/api/parecer/get/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"parecer",
 						"get",
 						"1"
@@ -780,13 +797,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/parecer/delete/1",
+					"raw": "http://localhost:8080/api/parecer/delete/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"parecer",
 						"delete",
 						"1"
@@ -820,13 +838,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/parecer/create",
+					"raw": "http://localhost:8080/api/parecer/create",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"parecer",
 						"create"
 					]
@@ -859,13 +878,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/parecer/update/4",
+					"raw": "http://localhost:8080/api/parecer/update/4",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"api",
 						"parecer",
 						"update",
 						"4"
@@ -874,6 +894,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
