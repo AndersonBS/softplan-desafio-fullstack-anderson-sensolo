@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import br.com.softplan.desafio.fullstack.backend.model.Parecer;
 
 /**
@@ -13,6 +14,7 @@ import br.com.softplan.desafio.fullstack.backend.model.Parecer;
  * @since 07/11/2020
  */
 
+@Repository
 public interface ParecerRepository extends JpaRepository<Parecer, Long> {
 
 	/**
