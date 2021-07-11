@@ -24,6 +24,9 @@
 		
 		<!-- JSON Web Token Version -->
 		<jjwt.version>0.9.1</jjwt.version>
+		
+		<!-- Springdoc Openapi UI -->
+		<springdoc-openapi-ui.version>1.5.2</springdoc-openapi-ui.version>
 	</properties>
 
 	<dependencies>
@@ -32,7 +35,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		
 		<!-- Spring Boot Devtols -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -117,6 +120,14 @@
 		    <artifactId>jjwt</artifactId>
 		    <version>${jjwt.version}</version>
 		</dependency>
+		
+		<!-- Springdoc Openapi UI -->
+		<dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-ui</artifactId>
+		    <version>${springdoc-openapi-ui.version}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

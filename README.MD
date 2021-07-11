@@ -13,6 +13,7 @@
 - Validação dos requests com Java Bean Validation
 - Simulação de requisições com Postman
 - Paginação com Pageable
+- Documentação da API com Swagger UI
 
 **Frontend**
 - Projeto React
@@ -47,6 +48,7 @@ Requisitos:
 Instruções:
 - Execute o comando "docker-compose up" na raiz do projeto
 - Acesse o link http://localhost/login em seu navegador
+- Para consultar a documentação da API acesse http://localhost:8080/swagger-ui.html em seu navegador
 
 ### Melhorias a serem feitas
 - Adicionar busca nas listas de registros
@@ -140,6 +142,7 @@ Em caso de dúvidas, envie um email para [g_cpa_squad_produto@softplan.com.br](m
 
 ### Screenshots
 
+![Documentação API](/screenshots/Documentacao.png?raw=true "Documentação API")
 ![Login](/screenshots/Login.png?raw=true "Login")
 ![Home](/screenshots/Home.png?raw=true "Home")
 ![Usuários](/screenshots/Usuarios.png?raw=true "Usuários")

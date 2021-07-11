@@ -15,9 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.softplan.desafio.fullstack.backend.dto.request.UsuarioRequestDTO;
+import br.com.softplan.desafio.fullstack.backend.dto.response.MensagemResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.PageableUsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.dto.response.UsuarioResponseDTO;
 import br.com.softplan.desafio.fullstack.backend.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Controller que processa as requisições relacionadas ao usuário.
@@ -27,64 +34,65 @@ import br.com.softplan.desafio.fullstack.backend.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuario")
+@Tag(name = "Usuário", description = "Processa as requisições relacionadas ao usuário")
 public class UsuarioController {
 
 	@Autowired UsuarioService usuarioService;
 
-	/**
-	 * Lista os usuários com paginação
-	 * @param selectedPage
-	 * @param pageSize
-	 * @return
-	 */
-	@GetMapping("/get")
+	@GetMapping(value = "/get", produces = { "application/json" })
+	@Operation(summary = "Lista os usuários",
+			description = "Lista os usuários cadastrados com paginação [ADMINISTRADOR]", tags = { "Usuário" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Lista com os usuários retornada") })
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
-	public ResponseEntity<PageableUsuarioResponseDTO> getUsuarios(
-			@RequestParam(defaultValue = "0") final int selectedPage, @RequestParam(defaultValue = "5") final int pageSize) {
+	public ResponseEntity<PageableUsuarioResponseDTO> getUsuarios(@RequestParam(defaultValue = "0") final int selectedPage,
+			@RequestParam(defaultValue = "5") final int pageSize) {
 		return ResponseEntity.ok(this.usuarioService.getUsuarios(selectedPage, pageSize));
 	}
 
-	/**
-	 * Busca um usuário pelo código
-	 * @param codigo
-	 * @return
-	 */
-	@GetMapping("/get/{codigo}")
+	@GetMapping(value = "/get/{codigo}", produces = { "application/json" })
+	@Operation(summary = "Busca um usuário", description = "Busca um usuário pelo código [ADMINISTRADOR]", tags = { "Usuário" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Usuário retornado"),
+			@ApiResponse(responseCode = "400", description = "Código inválido", content = @Content),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+					content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))) })
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<UsuarioResponseDTO> getUsuario(@PathVariable final Long codigo) {
 		return ResponseEntity.ok(this.usuarioService.getUsuario(codigo));
 	}
 
-	/**
-	 * Apaga um usuário pelo código
-	 * @param codigo
-	 * @return
-	 */
-	@DeleteMapping("/delete/{codigo}")
+	@DeleteMapping(value = "/delete/{codigo}", produces = { "application/json" })
+	@Operation(summary = "Apaga um usuário", description = "Apaga um usuário pelo código [ADMINISTRADOR]", tags = { "Usuário" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "Usuário apagado"),
+			@ApiResponse(responseCode = "400", description = "Código inválido", content = @Content),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+					content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))) })
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<Void> deleteUsuario(@PathVariable final Long codigo) {
 		this.usuarioService.deleteUsuario(codigo);
 		return ResponseEntity.noContent().build();
 	}
 
-	/**
-	 * Cria um usuário
-	 * @param usuarioRequestDTO
-	 * @return
-	 */
-	@PostMapping("/create")
+	@PostMapping(value = "/create", consumes = { "application/json" }, produces = { "application/json" })
+	@Operation(summary = "Cria um usuário", description = "Cria um usuário [ADMINISTRADOR]", tags = { "Usuário" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "Usuário criado"),
+			@ApiResponse(responseCode = "400", description = "Usuário inválido",
+					content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))) })
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<UsuarioResponseDTO> createUsuario(@Valid @RequestBody final UsuarioRequestDTO usuarioRequestDTO) {
 		return new ResponseEntity<>(this.usuarioService.createUsuario(usuarioRequestDTO), HttpStatus.CREATED);
 	}
 
-	/**
-	 * Atualiza um usuário pelo código
-	 * @param codigo
-	 * @param usuarioRequestDTO
-	 * @return
-	 */
-	@PutMapping("/update/{codigo}")
+	@PutMapping(value = "/update/{codigo}", consumes = { "application/json" }, produces = { "application/json" })
+	@Operation(summary = "Atualiza um usuário", description = "Atualiza um usuário pelo código [ADMINISTRADOR]", tags = { "Usuário" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "202", description = "Usuário atualizado"),
+			@ApiResponse(responseCode = "400", description = "Usuário inválido",
+					content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+					content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))) })
 	@PreAuthorize("hasAuthority('ADMINISTRADOR')")
 	public ResponseEntity<UsuarioResponseDTO> updateUsuario(@PathVariable("codigo") final long codigo,
 			@Valid @RequestBody final UsuarioRequestDTO usuarioRequestDTO) {

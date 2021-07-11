@@ -58,10 +58,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf().disable().cors()
-				.and().authorizeRequests().antMatchers("/api/authenticate/**").permitAll().anyRequest().authenticated()
-				.and().exceptionHandling().authenticationEntryPoint(this.jwtAuthenticationEntryPoint)
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		httpSecurity.csrf().disable().cors().and()
+				.authorizeRequests().antMatchers(
+						"/v3/**",
+						"/configuration/ui",
+						"/swagger-resources",
+						"/configuration/security",
+						"/swagger-ui/**",
+						"/swagger-ui.html",
+						"/webjars/**",
+						"/swagger-resources/configuration/ui").permitAll().and()
+				.authorizeRequests().antMatchers("/api/authenticate/**").permitAll()
+				.anyRequest().authenticated().and()
+				.exceptionHandling().authenticationEntryPoint(this.jwtAuthenticationEntryPoint).and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		httpSecurity.addFilterBefore(this.jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 

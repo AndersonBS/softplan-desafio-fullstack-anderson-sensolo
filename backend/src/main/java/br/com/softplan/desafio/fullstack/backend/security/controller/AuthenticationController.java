@@ -15,6 +15,11 @@ import br.com.softplan.desafio.fullstack.backend.security.dto.response.JwtRespon
 import br.com.softplan.desafio.fullstack.backend.security.jwt.JwtTokenUtil;
 import br.com.softplan.desafio.fullstack.backend.security.model.JwtUserDetails;
 import br.com.softplan.desafio.fullstack.backend.security.service.JwtUserDetailsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Classe que processa as requisições de autenticação de usuário.
@@ -24,13 +29,18 @@ import br.com.softplan.desafio.fullstack.backend.security.service.JwtUserDetails
 
 @RestController
 @RequestMapping("/api/authenticate")
+@Tag(name = "Autenticação", description = "Processa as requisições de autenticação dos usuários")
 public class AuthenticationController {
 
 	@Autowired JwtTokenUtil jwtTokenUtil;
 	@Autowired JwtUserDetailsService jwtUserDetailsService;
 	@Autowired AuthenticationManager authenticationManager;
 
-	@PostMapping
+	@PostMapping(consumes = { "application/json" }, produces = { "application/json" })
+	@Operation(summary = "Autentica um usuário", description = "Autentica um usuário no sistema", tags = { "Autenticação" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Usuário autenticado"),
+			@ApiResponse(responseCode = "404", description = "Usuário inválido", content = @Content) })
 	public ResponseEntity<JwtResponseDTO> authenticate(@Valid @RequestBody final JwtRequestDTO jwtRequestDTO) {
 		final UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(jwtRequestDTO.getUsername());
 		if (userDetails == null) {
